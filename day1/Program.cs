@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -15,20 +14,35 @@ namespace day1
 
             Console.WriteLine("Part One : ");
 
-            foreach (var expense1 in expenses)
-                foreach (var expense2 in expenses)
-                    if (expense1 + expense2 == expectedValue)
-                        value = expense1 * expense2;
+            for (var i = 0; i < expenses.Count; i++)
+            {
+                for (var j = 0; j < expenses.Count; j++)
+                {
+                    if (i == j) continue;
+
+                    if (expenses[i] + expenses[j] == expectedValue)
+                        value = expenses[i] * expenses[j];
+                }
+            }
 
             Console.WriteLine($"Answer : {value}");
 
             Console.WriteLine("Part Two :");
 
-            foreach (var expense1 in expenses)
-                foreach (var expense2 in expenses)
-                    foreach (var expense3 in expenses)
-                        if (expense1 + expense2 + expense3 == expectedValue)
-                            value = expense1 * expense2 * expense3;
+            for (var i = 0; i < expenses.Count; i++)
+            {
+                for (var j = 0; j < expenses.Count; j++)
+                {
+
+                    for (var k = 0; k < expenses.Count; k++)
+                    {
+                        if (i == j || i == k || j == k) continue;
+
+                        if (expenses[i] + expenses[j] + expenses[k] == expectedValue)
+                            value = expenses[i] * expenses[j] * expenses[k];
+                    }
+                }
+            }
 
             Console.WriteLine($"Answer : {value}");
         }
