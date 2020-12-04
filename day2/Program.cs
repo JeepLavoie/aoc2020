@@ -10,37 +10,28 @@ namespace day2
         {
             var passwordInfos = File.ReadAllLines("input.txt").Select(x => new PasswordInfo(x));
 
-            Console.WriteLine("Part One : ");
+            //Part One
             Console.WriteLine($"Number of valid passwords : {passwordInfos.Count(x => x.IsValid())}");
 
-            Console.WriteLine("Part Two : ");
-            Console.WriteLine($"Number of valid passwords : {passwordInfos.Count(x => x.IsValidPartTwo())}");
-        }
-    }
-
-    class PasswordInfo
-    {
-        private int min;
-        private int max;
-        private char character;
-        private string password;
-
-        public PasswordInfo(string input){
-            password = input.Split(':')[1].Trim();
-            min = int.Parse(input.Split(' ')[0].Split('-')[0]);
-            max = int.Parse(input.Split(' ')[0].Split('-')[1]);
-            character = input.Split(':')[0].Last();
+            //Part Two
+            Console.WriteLine($"Number of valid passwords : {passwordInfos.Count(x => x.IsValidForOTC())}");
         }
 
-        public bool IsValid()
+        public record PasswordInfo(char CharacterCheck, int Number1, int Number2, string Password)
         {
-            return min <= password.Count(x => x == character) && password.Count(x => x == character) <= max;
+            public PasswordInfo(string input) : this(
+                input.Split(':')[0].Last(),
+                int.Parse(input.Split(' ')[0].Split('-')[0]),
+                int.Parse(input.Split(' ')[0].Split('-')[1]),
+                input.Split(':')[1].Trim())
+            { }
+
+            public bool IsValid() => Number1 <= Password.Count(x => x == CharacterCheck) && Password.Count(x => x == CharacterCheck) <= Number2;
+            
+            public bool IsValidForOTC() => Password[Number1 - 1] == CharacterCheck ^ Password[Number2 - 1] == CharacterCheck;
+            
         }
 
-        public bool IsValidPartTwo(){
-            var minValidity = password[min-1] == character;
-            var maxValidity = password[max-1] == character;
-            return minValidity ^ maxValidity;
-        }
     }
+
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -8,33 +9,39 @@ namespace day3
     {
         static void Main(string[] args)
         {
-            var lines = File.ReadAllLines("input.txt");
+            var treeTravel = new TreeTravel(File.ReadAllLines("input.txt").ToList());
 
             //Part One
-            var part1 = GetNumberOfTree(lines, 3, 1);
-            Console.WriteLine($"Number of tree : {part1}");
+            Console.WriteLine($"Number of tree : {treeTravel.GetNumberOfTreeDefaultPath()}");
 
             //Part Two
-            (int searchIndex, int rowJump)[] allSearchPattern = new[] { (1, 1), (3, 1), (5, 1), (7, 1), (1, 2) };
+            Console.WriteLine($"Multiplication result : {treeTravel.GetNumberOfTreeForAllTravelPath()}");
 
-            var part2 = allSearchPattern.Select(x => GetNumberOfTree(lines, x.searchIndex, x.rowJump)).Aggregate(1L,(a,b)=> a*b);
-
-            Console.WriteLine($"Multiplication result : {part2}");
         }
 
-        private static long GetNumberOfTree(string[] lines, int searchIndex, int rowJump)
+        public record TreeTravel(List<string> TravelPath)
         {
-            var treeNumber = 0L;
-            var index = searchIndex;
-            var lineLength = lines[0].Length;
-            const char tree = '#';
+            private static readonly (int left, int down)[] NavigationPath = new[] { (1, 1), (3, 1), (5, 1), (7, 1), (1, 2) };
 
-            for (var i = rowJump; i < lines.Length; i += rowJump, index += searchIndex)
-                if (lines[i][GetSearchIndex(lineLength,index)] == tree) treeNumber++;
+            public long GetNumberOfTreeDefaultPath() => GetNumberOfTreeForTravelPath(TravelPath,(3,1));
+
+            public long GetNumberOfTreeForAllTravelPath() => 
+                NavigationPath.Select(x => GetNumberOfTreeForTravelPath(TravelPath, x)).Aggregate(1L, (a, b) => a * b);
             
-            return treeNumber;
-        }
+            private long GetNumberOfTreeForTravelPath(List<string> lines, (int left, int down) navigationPath)
+            {
+                var treeNumber = 0L;
+                var leftNavigation = navigationPath.left;
+                var lineLength = lines[0].Length;
+                const char tree = '#';
 
-        private static int GetSearchIndex(int lineLength, int searchIndex) => searchIndex % lineLength;
+                for (var i = navigationPath.down; i < lines.Count; i += navigationPath.down, leftNavigation += navigationPath.left)
+                    if (lines[i][GetLeftSearch(lineLength, leftNavigation)] == tree) treeNumber++;
+
+                return treeNumber;
+            }
+            private int GetLeftSearch(int lineLength, int leftNavigation) => leftNavigation % lineLength;
+
+        }
     }
 }
