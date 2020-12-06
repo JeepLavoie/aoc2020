@@ -1,10 +1,10 @@
 #!/bin/sh
 
-if [ "$#" -ne 1 ]; then
-  echo "Name of the day required" >&2
-  exit 1
-fi
+dotnet new console -n $2 -o $1-$2/src > /dev/null
+dotnet new xunit -n $2.Tests -o $1-$2/tests > /dev/null
+cd $1-$2/tests
+dotnet add reference ../src/$2.csproj > /dev/null
+cd ..
+touch input.txt
 
-dotnet new console -n $1 -o $1 > /dev/null
-
-[ -d $1 ] && echo "New day created"
+[ -d $1-$2 ] && echo "New day created"
